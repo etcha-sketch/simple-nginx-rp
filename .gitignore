@@ -1,0 +1,21 @@
+# Docker generated files
+**/.dockerignore
+**/Dockerfile.*
+**/docker-compose.*
+
+# Compiled binaries
+**/bin
+**/obj
+
+# Log files
+**/log
+**/logs
+
+# Local development files
+**/.env
+**/.idea
+**/.vscode
+
+# Dependency caches
+**/node_modules
+**/vendor
