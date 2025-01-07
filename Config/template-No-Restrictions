@@ -11,7 +11,7 @@ server {
         ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
         ssl_prefer_server_ciphers on;
 
-        access_log            /var/log/nginx/simplenginxrp.access.log fullinfo;
+        access_log            /var/log/nginx/simplenginxrp.access.log nginx_log_request;
         error_log             /var/log/nginx/simplenginxrp.error.log error;
 
         location = /robots.txt {
@@ -23,7 +23,7 @@ server {
 
 #       limit_req zone=one;
 
-        proxy_pass <<request_scheme>>://<<forward_image_or_ip>>:<<server_port>>;
+        proxy_pass <<request_scheme>>://<<server_name_or_ip>>:<<server_port>>;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_http_version 1.1;

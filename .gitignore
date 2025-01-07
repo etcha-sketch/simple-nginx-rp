@@ -10,6 +10,7 @@
 # Log files
 **/log
 **/logs
+**/*.log
 
 # Local development files
 **/.env
@@ -19,3 +20,6 @@
 # Dependency caches
 **/node_modules
 **/vendor
+
+# PS Build Scripts
+**/*.ps1
