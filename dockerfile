@@ -32,11 +32,11 @@ ENV PROXY_DEST_SCHEME=http \
 ENV SERVER_HEADER_NAME=DEFAULT
 
 # Define certificate request details.
-ENV CERT_COUNTRY=AA
-ENV CERT_ST=Testing
-ENV CERT_LOCALITY=Testing
-ENV CERT_ORGANIZATION=Testing
-ENV CERT_CN=testing.local
+ENV CERT_COUNTRY=AA \
+    CERT_ST=Testing \
+    CERT_LOCALITY=Testing \
+    CERT_ORGANIZATION=Testing \
+    CERT_CN=testing.local
 
 # DefineREDIRECT_PROXY_ACCESS_TO_STDOUT
 # if set to "TRUE" the
