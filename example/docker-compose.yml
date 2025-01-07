@@ -1,0 +1,46 @@
+# Sample docker-compose to protect a generic webserver running on port 80 with a HTTPS reverse proxy
+
+name: simple-nginx-reverse-proxy-demo
+
+services:
+  demo-webserver:
+    container_name: demo-webserver
+    image: nginx
+    networks:
+      - nginx-rp-demo
+    restart: no
+
+  nginx-rp:
+    image: etch4sketch/simple-nginx-reverse-proxy:latest
+    container_name: nginx-rp
+    restart: no
+    volumes:
+      - demo-nginx-rp-certs:/etc/nginx/ssl/
+      - demo-nginx-rp-server-conf:/etc/nginx/nginx-conf/
+      - demo-nginx-rp-logs:/var/log/nginx/
+      - demo-nginx-rp-sites-conf:/etc/nginx/sites-enabled/
+    environment:
+      REQUEST_SCHEME: "http" # http/https
+      SERVER_NAME_OR_IP: "demo-webserver"
+      SERVER_PORT: "80"
+      SERVER_HEADER_NAME: "MyDemoRP"
+      REDIRECT_PROXY_ACCESS_TO_STDOUT: "TRUE" # TRUE/FALSE
+      CERT_COUNTRY: CO
+      CERT_ST: ST
+      CERT_LOCALITY: My City
+      CERT_ORGANIZATION: demo
+      CERT_CN: demo-webserver.local
+    ports:
+      - "2222:443"
+    networks:
+      - nginx-rp-demo
+
+volumes:
+  demo-nginx-rp-sites-conf:
+  demo-nginx-rp-logs:
+  demo-nginx-rp-server-conf:
+  demo-nginx-rp-certs:
+
+networks:
+  nginx-rp-demo:
+    name: nginx-rp-demo
