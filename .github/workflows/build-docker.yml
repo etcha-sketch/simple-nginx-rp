@@ -1,0 +1,15 @@
+name: Build & Publish image to Docker Hub
+
+on:
+    [workflow_dispatch]
+
+
+jobs:
+  build:
+    runs-on: debian-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . -t etch4sketch/simple-nginx-reverse-proxy:latest
+    - name: Push image to Docker Hub
+      run: docker push etch4sketch/simple-nginx-reverse-proxy:latest
