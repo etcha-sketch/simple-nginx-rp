@@ -26,5 +26,5 @@ jobs:
     - name: Push image to Docker Hub
       run: |
         docker push etch4sketch/simple-nginx-reverse-proxy:v${{ steps.date.outputs.date }}
-        docker tag etch4sketch/simple-nginx-reverse-proxy:v${{ steps.date.outputs.date }} etch4sketch/simple-nginx-reverse-proxy:latest
-        docker push etch4sketch/simple-nginx-reverse-proxy::latest
+        docker image tag etch4sketch/simple-nginx-reverse-proxy:v${{ steps.date.outputs.date }} etch4sketch/simple-nginx-reverse-proxy:latest
+        docker push etch4sketch/simple-nginx-reverse-proxy:latest
