@@ -4,8 +4,8 @@ FROM nginx:stable
 # this is used to be able to set the server header option with nginx-extras
 # this also allows for roughly ~50MB smaller container size compared to
 # installing nginx on top of a generic debian image.
-RUN apt update && apt upgrade -y &&\
-    apt remove nginx -y &&\
+RUN apt update && apt upgrade -y && \
+    apt remove nginx -y && \
     apt install -y nginx nginx-extras
 
 # Define the four volumes
@@ -15,7 +15,12 @@ RUN apt update && apt upgrade -y &&\
 # /etc/nginx/nginx-conf     - The nginx configuration for the server itself in a volume
 #                               Startup creates a symlink from /etc/nginx/nginx-conf/nginx.conf
 #                               -> /etc/nginx/nginx.conf
-VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/ssl", "/var/log/nginx", "/etc/nginx/nginx-conf"]
+VOLUME [ \
+        "/etc/nginx/sites-enabled", \
+        "/etc/nginx/ssl", \
+        "/var/log/nginx", \
+        "/etc/nginx/nginx-conf"\
+        ]
 
 # Add the required files
 COPY ./Config/nginx.conf /etc/nginx/nginx-conf/nginx.conf

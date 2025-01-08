@@ -22,4 +22,4 @@
 **/vendor
 
 # PS Build Scripts
-**/*.ps1
+**/_*.ps1
