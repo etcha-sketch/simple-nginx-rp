@@ -13,5 +13,5 @@ jobs:
       run: docker build . -t etch4sketch/simple-nginx-reverse-proxy:latest
     - name: Push image to Docker Hub
       run: |
-        docker login -u etch4sketch -p {{ secrets.DOCKER_HUB_TOKEN}}
+        docker login -u etch4sketch -p {{ secrets.DOCKER_HUB_TOKEN }}
         docker push etch4sketch/simple-nginx-reverse-proxy:latest
