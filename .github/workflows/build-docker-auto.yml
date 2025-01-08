@@ -1,4 +1,4 @@
-name: Build & Publish image to Docker Hub
+name: Auto Build & Publish image to Docker Hub
 
 on:
   schedule:
