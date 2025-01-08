@@ -18,9 +18,9 @@ RUN apt update && apt upgrade -y &&\
 VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/ssl", "/var/log/nginx", "/etc/nginx/nginx-conf"]
 
 # Add the required files
-ADD ./Config/nginx.conf /etc/nginx/nginx-conf/nginx.conf
-ADD ./Config/template-No-Restrictions /etc/nginx/sites-enabled/nginx-rp
-ADD ./Config/startup.sh /startup.sh
+COPY ./Config/nginx.conf /etc/nginx/nginx-conf/nginx.conf
+COPY ./Config/template-No-Restrictions /etc/nginx/sites-enabled/nginx-rp
+COPY --chmod=755 ./Config/startup.sh /startup.sh
 
 # Define the protected service env variables
 ENV PROXY_DEST_SCHEME=http \
