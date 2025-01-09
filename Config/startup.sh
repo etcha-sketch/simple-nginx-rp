@@ -23,6 +23,25 @@ else
     echo "Certificate already exists, skipping creation of self-signed cert and key pair"
 fi
 
+# Download nginx.conf if the file has been deleted or using a bind
+if ! test -f /etc/nginx/nginx-conf/nginx.conf ; then
+    # /etc/nginx/nginx-conf/nginx.conf does not exist
+    echo "/etc/nginx/nginx-conf/nginx.conf does not exist, downloading from GitHub"
+    curl -O https://raw.githubusercontent.com/etcha-sketch/simple-nginx-rp/refs/heads/main/Config/nginx.conf
+    if test -f nginx.conf ; then
+        echo "nginx.conf downloaded successfully"
+        mv nginx.conf /etc/nginx/nginx-conf/nginx.conf
+    else
+        echo "ERROR: Failed to download https://raw.githubusercontent.com/etcha-sketch/simple-nginx-rp/refs/heads/main/Config/nginx.conf"
+        echo "Aborting. Manual intervention required"
+        exit
+    fi
+
+else
+    # /etc/nginx/nginx-conf/nginx.conf exists
+    echo "/etc/nginx/nginx-conf/nginx.conf already exists"
+fi
+
 # Determine if server header has been set
 if grep -q "<<Server_Header_Name>>" /etc/nginx/nginx-conf/nginx.conf ; then
     # Template still has default value
@@ -43,18 +62,35 @@ else
 fi
 
 # Always relink the nginx.conf from the nginx-conf folder.
-# Allows for the nginx.conf be be located in a persistent volume.
+# Allows for the nginx.conf be be located in a persistent volume/bind.
 echo "(Re)linking /etc/nginx-conf/nginx.conf -> /etc/nginx/nginx.conf"
 ln -sf /etc/nginx/nginx-conf/nginx.conf /etc/nginx/nginx.conf
 
+# Download nginx-rp if the file has been deleted or using a bind
+if ! test -f /etc/nginx/sites-enabled/nginx-rp ; then
+    # /etc/nginx/sites-enabled/nginx-rp does not exist
+    echo "/etc/nginx/sites-enabled/nginx-rp does not exist, downloading from GitHub"
+    curl -O https://raw.githubusercontent.com/etcha-sketch/simple-nginx-rp/refs/heads/main/Config/template-No-Restrictions
+    if test -f template-No-Restrictions ; then
+        echo "nginx-rp-template downloaded successfully"
+        mv template-No-Restrictions /etc/nginx/sites-enabled/nginx-rp
+    else
+        echo "ERROR: Failed to download https://raw.githubusercontent.com/etcha-sketch/simple-nginx-rp/refs/heads/main/Config/template-No-Restrictions"
+        echo "Aborting. Manual intervention required"
+        exit
+    fi
+else
+    # /etc/nginx/sites-enabled/nginx-rp exists
+    echo "/etc/nginx/sites-enabled/nginx-rp already exists"
+fi
+
 # Determine if the default reverse proxy configuration update has been completed
-if ! test -f /etc/nginx/sites-enabled/.nginx_rp_conf_complete ; then
+if grep -q "<<request_scheme>>" /etc/nginx/sites-enabled/nginx-rp ; then
     # Initial config not completed, replace with user-defined settings
     echo "Updating nginx reverse proxy. Destination: $PROXY_DEST_SCHEME://$SERVER_NAME_OR_IP:$SERVER_PORT"
     sed -i "s/<<request_scheme>>/$PROXY_DEST_SCHEME/g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s/<<server_name_or_ip>>/$SERVER_NAME_OR_IP/g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s/<<server_port>>/$SERVER_PORT/g" /etc/nginx/sites-enabled/nginx-rp
-    echo TRUE > /etc/nginx/sites-enabled/.nginx_rp_conf_complete
 else
     # Initial config already complete
     echo "Proxy destination already set: $(cat /etc/nginx/sites-enabled/nginx-rp | grep proxy_pass | awk '{print $2}' | tr -d ';')"
