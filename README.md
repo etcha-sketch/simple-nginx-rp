@@ -15,11 +15,13 @@ projects as possible such as allowing files of up to 10GB to be permitted to be 
 - Verbose and persistent logging for troubleshooting
 - Simple ability to redirect nginx verbose custom logging format to docker logs
     - Beware that this logs the entire request string which could expose api keys or secrets to the protected services, which would have otherwise been transmitted over http either way
+    - REDIRECT_PROXY_ACCESS_TO_STDOUT can be set to NONE to supress all logging within the container
 - Allows for all configuration to be complete via environment variables
     - Cert fields can be specified in CERT_* environment variables
     - Nginx configuration can be specified in PROXY_DEST_* environment variables
     - Server header can be configured with SERVER_HEADER_NAME
     - Redirecting nginx proxy logs to docker logs can be enabled with REDIRECT_PROXY_ACCESS_TO_STDOUT
+      - Setting REDIRECT_PROXY_ACCESS_TO_STDOUT to NONE will suppress all reverse proxy access logs in the containers
 - Easy integration with other docker-compose projects
 - Volumes will be automatically created and required files populated in volumes
 
@@ -78,7 +80,7 @@ services:
       PROXY_DEST_SERVER_NAME_OR_IP: "demo-webserver"
       PROXY_DEST_SERVER_PORT: "80"
       SERVER_HEADER_NAME: "MyDemoRP"
-      REDIRECT_PROXY_ACCESS_TO_STDOUT: "TRUE" # TRUE/FALSE
+      REDIRECT_PROXY_ACCESS_TO_STDOUT: "TRUE" # TRUE/FALSE/NONE
       CERT_COUNTRY: CO
       CERT_ST: ST
       CERT_LOCALITY: My City

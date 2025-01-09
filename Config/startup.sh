@@ -46,21 +46,16 @@ if grep -q "<<Server_Header_Name>>" /etc/nginx/nginx-conf/nginx.conf ; then
         echo "Server header not set as an environment variable, generating random string"
         export SERVER_HEADER_NAME="$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16; echo)"
         echo "Updating nginx config. Server Header: $SERVER_HEADER_NAME"
-        sed -i "s/<<Server_Header_Name>>/$SERVER_HEADER_NAME/g" /etc/nginx/nginx-conf/nginx.conf
+        sed -i "s|<<Server_Header_Name>>|$SERVER_HEADER_NAME|g" /etc/nginx/nginx-conf/nginx.conf
     else
         # Environment variable defined
         echo "Updating nginx config. Server Header: $SERVER_HEADER_NAME"
-        sed -i "s/<<Server_Header_Name>>/$SERVER_HEADER_NAME/g" /etc/nginx/nginx-conf/nginx.conf
+        sed -i "s|<<Server_Header_Name>>|$SERVER_HEADER_NAME|g" /etc/nginx/nginx-conf/nginx.conf
     fi
 else
     # Nginx.conf already has the server header set.
     echo "Server Header already set: $(cat /etc/nginx/nginx-conf/nginx.conf | grep more_set_headers | awk '{print $3}' | tr -d "';")"
 fi
-
-# Always relink the nginx.conf from the nginx-conf folder.
-# Allows for the nginx.conf be be located in a persistent volume/bind.
-echo "(Re)linking /etc/nginx-conf/nginx.conf -> /etc/nginx/nginx.conf"
-ln -sf /etc/nginx/nginx-conf/nginx.conf /etc/nginx/nginx.conf
 
 # Copy nginx-rp template if the file has been deleted or using a bind
 if ! test -f /etc/nginx/sites-enabled/nginx-rp ; then
@@ -76,9 +71,9 @@ fi
 if grep -q "<<request_scheme>>" /etc/nginx/sites-enabled/nginx-rp ; then
     # Initial config not completed, replace with user-defined settings
     echo "Updating nginx reverse proxy. Destination: $PROXY_DEST_SCHEME://$PROXY_DEST_SERVER_NAME_OR_IP:$PROXY_DEST_SERVER_PORT"
-    sed -i "s/<<request_scheme>>/$PROXY_DEST_SCHEME/g" /etc/nginx/sites-enabled/nginx-rp
-    sed -i "s/<<server_name_or_ip>>/$PROXY_DEST_SERVER_NAME_OR_IP/g" /etc/nginx/sites-enabled/nginx-rp
-    sed -i "s/<<server_port>>/$PROXY_DEST_SERVER_PORT/g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|<<request_scheme>>|$PROXY_DEST_SCHEME|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|<<server_name_or_ip>>|$PROXY_DEST_SERVER_NAME_OR_IP|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|<<server_port>>|$PROXY_DEST_SERVER_PORT|g" /etc/nginx/sites-enabled/nginx-rp
 else
     # Initial config already complete
     echo "Proxy destination already set: $(cat /etc/nginx/sites-enabled/nginx-rp | grep proxy_pass | awk '{print $2}' | tr -d ';')"
@@ -90,15 +85,31 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
   if [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "TRUE" ] ; then
     # REDIRECT_PROXY_ACCESS_TO_STDOUT set to "TRUE"
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to TRUE, redirecting proxy access log to standard output"
+    sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
     ln -sf /dev/stdout /var/log/nginx/simplenginxrp.access.log
+    # Need to relink log location to from /dev/null to verify it hasn't been redirected in a past run
+  elif [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "NONE" ] ; then
+    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to NONE, supressing all logs"
+    sed -i "s|access_log            /var/log/nginx/simplenginxrp.access.log|access_log            /dev/null|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|access_log /var/log/nginx/access.log|access_log /dev/null|g" /etc/nginx/nginx-conf/nginx.conf
+    # Need to ensure any previous links are removed
   else
     # REDIRECT_PROXY_ACCESS_TO_STDOUT not set to "TRUE"
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not set to TRUE, not redirecting output"
+    sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
+    # Need to ensure any previous links are removed
   fi
 else
-    # REDIRECT_PROXY_ACCESS_TO_STDOUT not defined (should never happen)
+  # REDIRECT_PROXY_ACCESS_TO_STDOUT not defined (should never happen)
   echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not set to TRUE, not redirecting output"
 fi
+
+# Always relink the nginx.conf from the nginx-conf folder.
+# Allows for the nginx.conf be be located in a persistent volume/bind.
+echo "(Re)linking /etc/nginx-conf/nginx.conf -> /etc/nginx/nginx.conf"
+ln -sf /etc/nginx/nginx-conf/nginx.conf /etc/nginx/nginx.conf
 
 # Always redirect nginx-rp error log to stderr
 ln -sf /dev/stderr /var/log/nginx/simplenginxrp.error.log
