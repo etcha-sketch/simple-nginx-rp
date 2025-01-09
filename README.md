@@ -21,9 +21,8 @@ projects as possible such as allowing files of up to 10GB to be permitted to be 
     - Server header can be configured with SERVER_HEADER_NAME
     - Redirecting nginx proxy logs to docker logs can be enabled with REDIRECT_PROXY_ACCESS_TO_STDOUT
 - Easy integration with other docker-compose projects
-- Volumes will be automatically created and files populated in volumes
-    - If a bind is used instead for the server or site config files will be downloaded from GitHub
-        - Internet access required
+- Volumes will be automatically created and required files populated in volumes
+
 
 
 https://hub.docker.com/r/etch4sketch/simple-nginx-reverse-proxy

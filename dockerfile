@@ -23,8 +23,8 @@ VOLUME [ \
         ]
 
 # Add the required files
-COPY ./Config/nginx.conf /etc/nginx/nginx-conf/nginx.conf
-COPY ./Config/template-No-Restrictions /etc/nginx/sites-enabled/nginx-rp
+COPY ./Config/nginx.conf /template/nginx.conf
+COPY ./Config/template-No-Restrictions /template/nginx-rp
 COPY --chmod=755 ./Config/startup.sh /startup.sh
 
 # Define the protected service env variables
