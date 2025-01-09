@@ -5,6 +5,8 @@ CONTAINER_RUN_ONCE="CONTAINER_RUN_ONCE_PLACEHOLDER"
 if [ ! -e $CONTAINER_RUN_ONCE ]; then
     touch $CONTAINER_RUN_ONCE
     echo "-- Container first startup --"
+    touch /var/log/nginx/access.log
+    touch /var/log/nginx/simplenginxrp.access.log
 else
     echo "-- Container restarted --"
 fi

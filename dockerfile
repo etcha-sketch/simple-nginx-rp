@@ -4,9 +4,9 @@ FROM nginx:stable
 # this is used to be able to set the server header option with nginx-extras
 # this also allows for roughly ~50MB smaller container size compared to
 # installing nginx on top of a generic debian image.
-RUN apt update && apt upgrade -y && \
-    apt remove nginx -y && \
-    apt install -y nginx nginx-extras
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get remove nginx -y && \
+    apt-get install -y nginx nginx-extras
 
 # Define the four volumes
 # /etc/nginx/sites-enabled  - Stores the enabled site configuration files
