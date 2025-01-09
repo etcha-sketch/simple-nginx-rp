@@ -87,12 +87,15 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to TRUE, redirecting proxy access log to standard output"
     sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
+    ln -sf /dev/stdout /var/log/nginx/access.log
     ln -sf /dev/stdout /var/log/nginx/simplenginxrp.access.log
   elif [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "NONE" ] ; then
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to NONE, supressing all logs"
     sed -i "s|access_log            /var/log/nginx/simplenginxrp.access.log|access_log            /dev/null|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /var/log/nginx/access.log|access_log /dev/null|g" /etc/nginx/nginx-conf/nginx.conf
     # Need to ensure any previous links are removed
+    unlink /var/log/nginx/access.log
+    echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/access.log
     unlink /var/log/nginx/simplenginxrp.access.log
     echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/simplenginxrp.access.log
   else
@@ -100,6 +103,8 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not set to TRUE, not redirecting output"
     sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
+    unlink /var/log/nginx/access.log
+    touch /var/log/nginx/access.log
     unlink /var/log/nginx/simplenginxrp.access.log
     touch /var/log/nginx/simplenginxrp.access.log
   fi
