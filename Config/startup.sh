@@ -90,6 +90,7 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
     ln -sf /dev/stdout /var/log/nginx/access.log
     ln -sf /dev/stdout /var/log/nginx/simplenginxrp.access.log
   elif [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "NONE" ] ; then
+  # REDIRECT_PROXY_ACCESS_TO_STDOUT set to "NONE"
     echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to NONE, supressing all logs"
     sed -i "s|access_log            /var/log/nginx/simplenginxrp.access.log|access_log            /dev/null|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /var/log/nginx/access.log|access_log /dev/null|g" /etc/nginx/nginx-conf/nginx.conf
@@ -98,9 +99,18 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
     echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/access.log
     unlink /var/log/nginx/simplenginxrp.access.log
     echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/simplenginxrp.access.log
+  elif [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "FALSE" ] ; then
+    # REDIRECT_PROXY_ACCESS_TO_STDOUT set to "FALSE"
+    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to FALSE, not redirecting output"
+    sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
+    unlink /var/log/nginx/access.log
+    touch /var/log/nginx/access.log
+    unlink /var/log/nginx/simplenginxrp.access.log
+    touch /var/log/nginx/simplenginxrp.access.log
   else
-    # REDIRECT_PROXY_ACCESS_TO_STDOUT not set to "TRUE"
-    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not set to TRUE, not redirecting output"
+    # REDIRECT_PROXY_ACCESS_TO_STDOUT set to an unknown value
+    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to unknown value [$REDIRECT_PROXY_ACCESS_TO_STDOUT], not redirecting output"
     sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
     unlink /var/log/nginx/access.log
