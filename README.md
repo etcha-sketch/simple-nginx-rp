@@ -1,5 +1,10 @@
-# simple-nginx-rp
-A simple nginx reverse proxy intended for protecting docker containers.
+# simple-nginx-reverse-proxy
+A simple nginx reverse proxy intended for protecting other docker containers.
+
+Background:
+Project was started due to having multiple docker and kubernetes hosts with an external HTTPS reverse proxy. There was a need to protect
+traffic between the primary reverse proxy and the container. A self-signed reverse proxy will at least encrypt the traffic between
+those two nodes. It was also preferable to not share self-signed certs nor have to generate self-signed certs for all small projects.
 
 https://hub.docker.com/r/etch4sketch/simple-nginx-reverse-proxy
 
