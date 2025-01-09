@@ -1,10 +1,30 @@
 # simple-nginx-reverse-proxy
 A simple nginx reverse proxy intended for protecting other docker containers.
 
-Background:
+## Background
+
 Project was started due to having multiple docker and kubernetes hosts with an external HTTPS reverse proxy. There was a need to protect
 traffic between the primary reverse proxy and the container. A self-signed reverse proxy will at least encrypt the traffic between
 those two nodes. It was also preferable to not share self-signed certs nor have to generate self-signed certs for all small projects.
+This project is not intended to be a primary reverse proxy as there are multiple liberties taken to be as compatible with as many other
+projects as possible such as allowing files of up to 10GB to be permitted to be uploaded.
+
+## Benefits
+
+- Auto-generation of 20 years self-signed certificate and private key pair
+- Verbose and persistent logging for troubleshooting
+- Simple ability to redirect nginx verbose custom logging format to docker logs
+    - Beware that this logs the entire request string which could expose api keys or secrets to the protected services, which would have otherwise been transmitted over http either way
+- Allows for all configuration to be complete via environment variables
+    - Cert fields can be specified in CERT_* environment variables
+    - Nginx configuration can be specified in PROXY_DEST_* environment variables
+    - Server header can be configured with SERVER_HEADER_NAME
+    - Redirecting nginx proxy logs to docker logs can be enabled with REDIRECT_PROXY_ACCESS_TO_STDOUT
+- Easy integration with other docker-compose projects
+- Volumes will be automatically created and files populated in volumes
+    - If a bind is used instead for the server or site config files will be downloaded from GitHub
+        - Internet access required
+
 
 https://hub.docker.com/r/etch4sketch/simple-nginx-reverse-proxy
 
@@ -12,8 +32,8 @@ Docker-cli example
 ```shell
 docker run -d \
     -e PROXY_DEST_SCHEME=http \
-    -e SERVER_NAME_OR_IP=127.0.0.1 \
-    -e SERVER_PORT=80 \
+    -e PROXY_DEST_SERVER_NAME_OR_IP=127.0.0.1 \
+    -e PROXY_DEST_SERVER_PORT=80 \
     -e SERVER_HEADER_NAME=MyReverseProxy \
     -e CERT_COUNTRY=US \
     -e CERT_ST=State \
@@ -55,9 +75,9 @@ services:
       - demo-nginx-rp-logs:/var/log/nginx/
       - demo-nginx-rp-sites-conf:/etc/nginx/sites-enabled/
     environment:
-      REQUEST_SCHEME: "http" # http/https
-      SERVER_NAME_OR_IP: "demo-webserver"
-      SERVER_PORT: "80"
+      PROXY_DEST_SCHEME: "http" # http/https
+      PROXY_DEST_SERVER_NAME_OR_IP: "demo-webserver"
+      PROXY_DEST_SERVER_PORT: "80"
       SERVER_HEADER_NAME: "MyDemoRP"
       REDIRECT_PROXY_ACCESS_TO_STDOUT: "TRUE" # TRUE/FALSE
       CERT_COUNTRY: CO

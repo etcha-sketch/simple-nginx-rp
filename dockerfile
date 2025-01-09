@@ -29,8 +29,8 @@ COPY --chmod=755 ./Config/startup.sh /startup.sh
 
 # Define the protected service env variables
 ENV PROXY_DEST_SCHEME=http \
-    SERVER_NAME_OR_IP=127.0.0.1 \
-    SERVER_PORT=80
+    PROXY_DEST_SERVER_NAME_OR_IP=127.0.0.1 \
+    PROXY_DEST_SERVER_PORT=80
 
 # Define the nginx.conf file server_header
 # if left at "DEFAULT" a random 16 char string is assigned

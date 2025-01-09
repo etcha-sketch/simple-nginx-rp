@@ -87,10 +87,10 @@ fi
 # Determine if the default reverse proxy configuration update has been completed
 if grep -q "<<request_scheme>>" /etc/nginx/sites-enabled/nginx-rp ; then
     # Initial config not completed, replace with user-defined settings
-    echo "Updating nginx reverse proxy. Destination: $PROXY_DEST_SCHEME://$SERVER_NAME_OR_IP:$SERVER_PORT"
+    echo "Updating nginx reverse proxy. Destination: $PROXY_DEST_SCHEME://$PROXY_DEST_SERVER_NAME_OR_IP:$PROXY_DEST_SERVER_PORT"
     sed -i "s/<<request_scheme>>/$PROXY_DEST_SCHEME/g" /etc/nginx/sites-enabled/nginx-rp
-    sed -i "s/<<server_name_or_ip>>/$SERVER_NAME_OR_IP/g" /etc/nginx/sites-enabled/nginx-rp
-    sed -i "s/<<server_port>>/$SERVER_PORT/g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s/<<server_name_or_ip>>/$PROXY_DEST_SERVER_NAME_OR_IP/g" /etc/nginx/sites-enabled/nginx-rp
+    sed -i "s/<<server_port>>/$PROXY_DEST_SERVER_PORT/g" /etc/nginx/sites-enabled/nginx-rp
 else
     # Initial config already complete
     echo "Proxy destination already set: $(cat /etc/nginx/sites-enabled/nginx-rp | grep proxy_pass | awk '{print $2}' | tr -d ';')"
