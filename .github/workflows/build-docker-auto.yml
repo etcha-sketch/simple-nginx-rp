@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set up date environment variable
-      run: echo "DATE=$(date -d 'TZ=\"America/Chicago\"' +'%Y%m%d')" >> $GITHUB_ENV
+      run: echo "DATE=$(date -d 'TZ="America/Chicago"' +'%Y%m%d')" >> $GITHUB_ENV
     - name: Test with environment variables
       run: echo v$DATE
     - uses: actions/checkout@v4
