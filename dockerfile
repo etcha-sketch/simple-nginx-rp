@@ -1,12 +1,13 @@
 FROM nginx:stable
 
 # Must remove the default nginx to install the maintainers version of nginx
-# this is used to be able to set the server header option with nginx-extras
-# this also allows for roughly ~50MB smaller container size compared to
+# This is used to be able to set the server header option with nginx-extras
+# This also allows for roughly ~50MB smaller container size compared to
 # installing nginx on top of a generic debian image.
-RUN apt-get update && apt-get upgrade -y && \
+RUN apt-get update && \
+    apt-get upgrade -y && \
     apt-get remove nginx -y && \
-    apt-get install -y nginx nginx-extras
+    apt-get install -y nginx-extras
 
 # Define the four volumes
 # /etc/nginx/sites-enabled  - Stores the enabled site configuration files
@@ -19,7 +20,7 @@ VOLUME [ \
         "/etc/nginx/sites-enabled", \
         "/etc/nginx/ssl", \
         "/var/log/nginx", \
-        "/etc/nginx/nginx-conf"\
+        "/etc/nginx/nginx-conf" \
         ]
 
 # Add the required files

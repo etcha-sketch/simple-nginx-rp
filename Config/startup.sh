@@ -2,22 +2,22 @@
 
 # Determine if container first run or not
 CONTAINER_RUN_ONCE="CONTAINER_RUN_ONCE_PLACEHOLDER"
-if [ ! -e $CONTAINER_RUN_ONCE ]; then
-    touch $CONTAINER_RUN_ONCE
+if [ ! -e "$CONTAINER_RUN_ONCE" ]; then
+    touch "$CONTAINER_RUN_ONCE"
     echo "-- Container first startup --"
-    touch /var/log/nginx/access.log
-    touch /var/log/nginx/simplenginxrp.access.log
+    touch /var/log/nginx/access.log /var/log/nginx/simplenginxrp.access.log
 else
     echo "-- Container restarted --"
 fi
 
 # Determine if certificate is already defined
-if ! test -f /etc/nginx/ssl/cert.pem ; then
+CERT_PATH="/etc/nginx/ssl/cert.pem"
+if [ ! -f "$CERT_PATH" ]; then
     # Certificate and key do not exist, generate 20yr self-signed cert
-    echo "/etc/nginx/ssl/cert.pem does not exist, creating 20yr self-signed cert and key"
+    echo "$CERT_PATH does not exist, creating 20yr self-signed cert and key"
     openssl req -x509 -nodes -days 7300 -newkey rsa:2048 \
         -subj "/C=$CERT_COUNTRY/ST=$CERT_ST/L=$CERT_LOCALITY/O=$CERT_ORGANIZATION/CN=$CERT_CN" \
-        -keyout /etc/nginx/ssl/key.key -out /etc/nginx/ssl/cert.pem >/dev/null 2>&1
+        -keyout /etc/nginx/ssl/key.key -out "$CERT_PATH" >/dev/null 2>&1
     chmod 600 /etc/nginx/ssl/*
     echo "Self-signed cert and key generated with the following settings:"
     echo "  C:   $CERT_COUNTRY"
@@ -101,18 +101,9 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
     echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/access.log
     unlink /var/log/nginx/simplenginxrp.access.log
     echo 'LOGGING DISABLED!! $REDIRECT_PROXY_ACCESS_TO_STDOUT=NONE' > /var/log/nginx/simplenginxrp.access.log
-  elif [ "$REDIRECT_PROXY_ACCESS_TO_STDOUT" = "FALSE" ] ; then
-    # REDIRECT_PROXY_ACCESS_TO_STDOUT set to "FALSE"
-    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to FALSE, not redirecting output"
-    sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
-    sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
-    unlink /var/log/nginx/access.log
-    touch /var/log/nginx/access.log
-    unlink /var/log/nginx/simplenginxrp.access.log
-    touch /var/log/nginx/simplenginxrp.access.log
   else
-    # REDIRECT_PROXY_ACCESS_TO_STDOUT set to an unknown value
-    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to unknown value [$REDIRECT_PROXY_ACCESS_TO_STDOUT], not redirecting output"
+    # REDIRECT_PROXY_ACCESS_TO_STDOUT set to anything else
+    echo "REDIRECT_PROXY_ACCESS_TO_STDOUT set to $REDIRECT_PROXY_ACCESS_TO_STDOUT, not redirecting output"
     sed -i "s|access_log            /dev/null|access_log            /var/log/nginx/simplenginxrp.access.log|g" /etc/nginx/sites-enabled/nginx-rp
     sed -i "s|access_log /dev/null|access_log /var/log/nginx/access.log|g" /etc/nginx/nginx-conf/nginx.conf
     unlink /var/log/nginx/access.log
@@ -122,7 +113,7 @@ if [ -n $REDIRECT_PROXY_ACCESS_TO_STDOUT ] ; then
   fi
 else
   # REDIRECT_PROXY_ACCESS_TO_STDOUT not defined (should never happen)
-  echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not set to TRUE, not redirecting output"
+  echo "REDIRECT_PROXY_ACCESS_TO_STDOUT not defined"
 fi
 
 # Always relink the nginx.conf from the nginx-conf folder.

@@ -1,28 +1,23 @@
 # simple-nginx-reverse-proxy
-A simple nginx reverse proxy intended for protecting other docker containers.
+A simple nginx reverse proxy for protecting other Docker containers.
 
 ## Background
 
-Project was started due to having multiple docker and kubernetes hosts with an external HTTPS reverse proxy. There was a need to protect
-traffic between the primary reverse proxy and the container. A self-signed reverse proxy will at least encrypt the traffic between
-those two nodes. It was also preferable to not share self-signed certs nor have to generate self-signed certs for all small projects.
-This project is not intended to be a primary reverse proxy as there are multiple liberties taken to be as compatible with as many other
-projects as possible such as allowing files of up to 10GB to be permitted to be uploaded.
+This project was created to secure traffic between a primary reverse proxy and Docker containers using a self-signed certificate. It is not intended to be a primary reverse proxy but rather to provide encryption for small projects without the need to share or generate multiple self-signed certificates.
 
 ## Benefits
 
-- Auto-generation of 20 years self-signed certificate and private key pair
-- Verbose and persistent logging for troubleshooting
-- Simple ability to redirect nginx verbose custom logging format to docker logs
-    - Beware that this logs the entire request string which could expose api keys or secrets to the protected services, which would have otherwise been transmitted over http either way
-    - REDIRECT_PROXY_ACCESS_TO_STDOUT can be set to NONE to supress all logging within the container
-- Allows for all configuration to be complete via environment variables
-    - Cert fields can be specified in CERT_* environment variables
-    - Nginx configuration can be specified in PROXY_DEST_* environment variables
-    - Server header can be configured with SERVER_HEADER_NAME
-    - Redirecting nginx proxy logs to docker logs can be enabled with REDIRECT_PROXY_ACCESS_TO_STDOUT
-      - Setting REDIRECT_PROXY_ACCESS_TO_STDOUT to NONE will suppress all reverse proxy access logs in the containers
-- Easy integration with other docker-compose projects
+- Auto-generates a 20-year self-signed certificate and private key
+- Persistent logging for troubleshooting
+- Option to redirect nginx logs to Docker logs
+  - Note: This logs the entire request string, which may expose sensitive information
+  - Set `REDIRECT_PROXY_ACCESS_TO_STDOUT` to `NONE` to suppress all logging within the container
+- Configuration via environment variables
+  - Certificate fields: `CERT_*`
+  - Nginx configuration: `PROXY_DEST_*`
+  - Server header: `SERVER_HEADER_NAME`
+  - Redirect logs: `REDIRECT_PROXY_ACCESS_TO_STDOUT`
+- Easy integration with other Docker Compose projects
 - Volumes will be automatically created and required files populated in volumes
 
 
@@ -100,4 +95,3 @@ volumes:
 networks:
   nginx-rp-demo:
     name: nginx-rp-demo
-```
