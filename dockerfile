@@ -52,7 +52,7 @@ ENV CERT_COUNTRY=AA \
 ENV REDIRECT_PROXY_ACCESS_TO_STDOUT=FALSE
 
 # Define healthcheck
-HEALTHCHECK --interval=1m30s --retries=3 --timeout=3s CMD curl -s https://localhost/.simple_rp_healthcheck -k || exit 1
+HEALTHCHECK --interval=1m30s --retries=3 --timeout=3s CMD echo "$(date +%Y-%m-%dT%H:%M:%S) - Health check: $(curl -s -k https://localhost/.simple_rp_healthcheck)" || exit 1
 
 # Expose the HTTPS port
 EXPOSE 443/tcp
