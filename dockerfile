@@ -51,6 +51,9 @@ ENV CERT_COUNTRY=AA \
 # if set to "TRUE" the
 ENV REDIRECT_PROXY_ACCESS_TO_STDOUT=FALSE
 
+# Define healthcheck
+HEALTHCHECK --interval=1m30s --retries=3 --timeout=3s CMD curl https://localhost/.healthcheck.txt -k || exit 1
+
 # Expose the HTTPS port
 EXPOSE 443/tcp
 

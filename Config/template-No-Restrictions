@@ -37,6 +37,11 @@ server {
         return 200 "User-agent: *\nDisallow: /\n";
         }
 
+        location = /.healthcheck.txt {
+        add_header Content-Type text/plain;
+        return 200 "Running\n";
+        }
+
         location / {
                 proxy_pass <<request_scheme>>://<<server_name_or_ip>>:<<server_port>>;
         }
