@@ -4,10 +4,17 @@
 CONTAINER_RUN_ONCE="CONTAINER_RUN_ONCE_PLACEHOLDER"
 if [ ! -e "$CONTAINER_RUN_ONCE" ]; then
     touch "$CONTAINER_RUN_ONCE"
-    echo "-- Container first startup --"
+    echo "--- Container first startup ---"
     touch /var/log/nginx/access.log /var/log/nginx/simplenginxrp.access.log
+    # Perform any required migrations
+    if [ -f /migrations.sh ]; then
+        echo "-- Running migrations --"
+        sh /migrations.sh
+    else
+        echo "-- No migrations found --"
+    fi
 else
-    echo "-- Container restarted --"
+    echo "--- Container restarted ---"
 fi
 
 # Log container build date

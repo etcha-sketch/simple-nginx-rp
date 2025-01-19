@@ -33,13 +33,13 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
 
         location = /robots.txt {
-        add_header Content-Type text/plain;
-        return 200 "User-agent: *\nDisallow: /\n";
+                add_header Content-Type text/plain;
+                return 200 "User-agent: *\nDisallow: /\n";
         }
 
         location = /.simple_rp_healthcheck {
-        add_header Content-Type text/plain;
-        return 200 "Running\n";
+                add_header Content-Type text/plain;
+                return 200 "Running\n";
         }
 
         location / {
