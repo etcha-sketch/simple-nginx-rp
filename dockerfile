@@ -9,6 +9,9 @@ RUN apt-get update && \
     apt-get remove nginx -y && \
     apt-get install -y nginx-extras
 
+# Add the build date to the container image
+RUN date -d 'TZ="America/Chicago"' +'%Y%m%d' > /.container_build_date
+
 # Define the four volumes
 # /etc/nginx/sites-enabled  - Stores the enabled site configuration files
 # /etc/nginx/ssl            - Stores the certificate and key
