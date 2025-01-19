@@ -10,6 +10,13 @@ else
     echo "-- Container restarted --"
 fi
 
+# Log container build date
+BUILD_DATE="/.container_build_date"
+if test -f $BUILD_DATE ; then
+    # Build date exists
+    echo "Container build date: $(cat $BUILD_DATE)"
+fi
+
 # Determine if certificate is already defined
 CERT_PATH="/etc/nginx/ssl/cert.pem"
 if [ ! -f "$CERT_PATH" ]; then
